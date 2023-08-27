@@ -1,5 +1,17 @@
 #!/bin/bash
 
+# Set your Ansible Tower API token
+API_TOKEN="your_api_token_here"
+
+# Ansible Tower API URL
+TOWER_URL="https://your-ansible-tower-url/api/v2"
+
+# Get the hostname of the current server
+HOST_NAME="$HOSTNAME"
+
+# Make API request to fetch host details by name
+HOST_JSON=$(curl -s -H "Authorization: Bearer $API_TOKEN" "$TOWER_URL/hosts/?name=$HOST_NAME")
+
 # Replace these variables with your actual Jenkins master URL and credentials
 JENKINS_URL="http://your-jenkins-master-url"
 USERNAME="your-username"
