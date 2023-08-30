@@ -1,0 +1,9 @@
+---
+- hosts: localhost
+  any_errors_fatal: true
+  gather_facts: True
+  become: yes
+
+  tasks:
+  - import_role:
+      name: opendj
