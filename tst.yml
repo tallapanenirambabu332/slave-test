@@ -1,0 +1,10 @@
+---
+- name: Install Git
+  hosts: your_target_hosts
+  become: false  # Disable privilege escalation
+ 
+  tasks:
+    - name: Install Git
+      ansible.builtin.package:
+        name: git
+        state: present
