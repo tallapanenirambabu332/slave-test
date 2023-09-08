@@ -7,3 +7,33 @@
   tasks:
   - import_role:
       name: opendj
+---
+- name: Copy and Decrypt Encrypted Shell Script
+  hosts: your_server
+  become: yes  # If you need elevated privileges to copy the file
+
+  vars:
+    encrypted_script_path: "/path/on/server/encrypted_script.sh"  # Set the default encrypted script path
+    decrypted_script_path: "/path/on/server/decrypted_script.sh"  # Set the default decrypted script path
+
+  tasks:
+    - name: Check out Git Repository
+      ansible.builtin.git:
+        repo: https://github.com/yourusername/yourrepo.git
+        dest: /tmp/yourrepo
+        version: master
+
+    - name: Copy Encrypted Script to Server
+      ansible.builtin.copy:
+        src: /tmp/yourrepo/path/to/encrypted_script.sh
+        dest: "{{ encrypted_script_path }}"  # Use the encrypted_script_path variable
+      no_log: true  # Prevent the encrypted file from appearing in Tower logs
+
+    - name: Decrypt Encrypted Script
+      ansible.builtin.shell:
+        cmd: ansible-vault decrypt "{{ encrypted_script_path }}" --output "{{ decrypted_script_path }}"
+        executable: /bin/bash
+      args:
+        executable: /bin/bash
+      environment:
+        ANSIBLE_VAULT_PASSWORD: "{{ vault_credential_password }}"  # Reference the Vault credential password
