@@ -1,4 +1,23 @@
 ---
+---
+- name: Example Playbook
+  hosts: localhost
+  gather_facts: no
+
+  tasks:
+    - name: Get Ansible Tower Vault Credential
+      set_fact:
+        ansible_vault_password: "{{ lookup('tower_vault_credential', 'Your_Vault_Credential_Name') }}"
+      run_once: yes
+
+    - name: Decrypt Vault-Encrypted File
+      include_vars:
+        file: secrets.yml
+      vars:
+        ansible_vault_password: "{{ ansible_vault_password }}"
+
+    # Your tasks that use the decrypted variables go here.
+    
 - hosts: localhost
   any_errors_fatal: true
   gather_facts: True
