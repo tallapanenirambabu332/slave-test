@@ -8,3 +8,15 @@
       ansible.builtin.package:
         name: git
         state: present
+---
+- name: Example Playbook for File Decryption
+  hosts: your_target_hosts
+  become: yes
+  tasks:
+    - name: Decrypt File
+      ansible.builtin.shell: |
+        ansible-vault decrypt /path/to/encrypted_file
+      delegate_to: localhost
+      changed_when: false
+    vars:
+      ansible_become_pass: "{{ lookup('tower', 'my_vault_credential_name') }}"
