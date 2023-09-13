@@ -33,3 +33,16 @@
         ansible-vault decrypt /path/to/encrypted_file
       delegate_to: localhost
       changed_when: false
+
+---
+- name: Example Playbook
+  hosts: your_target_hosts
+  tasks:
+    - name: Decrypt File Using Ansible Vault Password
+      ansible.builtin.shell: |
+        ansible-vault decrypt /path/to/encrypted_file --vault-password-file <(echo "{{ ansible_vault_password }}")
+      delegate_to: localhost
+      changed_when: false
+
+
+      
