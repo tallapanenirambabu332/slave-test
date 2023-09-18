@@ -1,34 +1,36 @@
 pipeline {
-    agent any
+    agent none
+    
+    parameters {
+        string(name: 'vaultString', defaultValue: 'my_secret_string', description: 'Ansible Vault String to Encrypt')
+        string(name: 'ansibleFileName', defaultValue: 'my_ansible_file', description: 'Ansible File to Encrypt')
+    }
     
     stages {
         stage('Encrypt Ansible Vault String') {
             when {
-                expression { params.encryptVaultString }
+                expression { params.vaultString != '' }
             }
             steps {
                 script {
-                    def vaultPassword = credentials('your_vault_password_credential_id')
-                    sh "ansible-vault encrypt_string --vault-password-file=${vaultPassword} 'my_secret_string' --name 'my_secret'"
+                    def vaultPassword = withCredentials([string(credentialsId: 'your_vault_password_credential_id', variable: 'VAULT_PASSWORD')]) {
+                        sh "echo '\${VAULT_PASSWORD}' | ansible-vault encrypt_string --name '${params.vaultString}'"
+                    }
                 }
             }
         }
         
         stage('Encrypt Ansible File with Parameters') {
             when {
-                expression { params.encryptFile }
+                expression { params.ansibleFileName != '' }
             }
             steps {
                 script {
-                    def vaultPassword = credentials('your_vault_password_credential_id')
-                    sh "ansible-vault encrypt my_ansible_file --vault-password-file=${vaultPassword}"
+                    def vaultPassword = withCredentials([string(credentialsId: 'your_vault_password_credential_id', variable: 'VAULT_PASSWORD')]) {
+                        sh "echo '\${VAULT_PASSWORD}' | ansible-vault encrypt ${params.ansibleFileName}"
+                    }
                 }
             }
         }
-    }
-    
-    parameters {
-        booleanParam(name: 'encryptVaultString', defaultValue: true, description: 'Encrypt Ansible Vault String')
-        booleanParam(name: 'encryptFile', defaultValue: true, description: 'Encrypt Ansible File with Parameters')
     }
 }
